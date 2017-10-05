@@ -74,7 +74,7 @@ let rec _dump_hex mm idx len =
   else
     _dump_hex mm (idx+1) (len-1)
 
-(*
+
 let dump_hex mm idx len =
   _dump_hex mm idx len;
   Printf.printf "\n"
@@ -88,22 +88,3 @@ let dump_info mm idx =
   Printf.printf "idx=%x\n" idx;
   
   dump_hex mm idx 50;
-  Printf.printf "%x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x\n" (int_of_char (get_byte mm idx))
-                                 (int_of_char (get_byte mm (idx+1)))
-                                 (int_of_char (get_byte mm (idx+2)))
-                                 (int_of_char (get_byte mm (idx+3)))
-                                 (int_of_char (get_byte mm (idx+4)))
-                                 (int_of_char (get_byte mm (idx+5)))
-                                 (int_of_char (get_byte mm (idx+6)))
-                                 (int_of_char (get_byte mm (idx+7)))
-                                 (int_of_char (get_byte mm (idx+8)))
-                                 (int_of_char (get_byte mm (idx+9)))
-                                 (int_of_char (get_byte mm (idx+0xa)))
-                                 (int_of_char (get_byte mm (idx+0xb)))
-                                 (int_of_char (get_byte mm (idx+0xc)))
-                                 (int_of_char (get_byte mm (idx+0xd)))
-                                 (int_of_char (get_byte mm (idx+0xe)))
-                                 (int_of_char (get_byte mm (idx+0xf)))
-                                 (int_of_char (get_byte mm (idx+0x10)))
-
-*)
