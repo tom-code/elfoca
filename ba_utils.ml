@@ -2,12 +2,11 @@
 (* some utilities to work with Bigarray *)
 
 
-
-
 type stream_reader = {
   mm: (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Genarray.t;
   mutable ptr: int;
 };;
+
 
 let st_get_byte sr =
   sr.ptr <- sr.ptr + 1;
@@ -57,3 +56,17 @@ let get_bytes mm ptr len =
     Bytes.set out idx (get_byte mm (ptr+idx));
   done;
   out
+
+(* read zero terminated string *)
+let rec _read_zt_str mm idx buf =
+  let chr = get_byte mm idx in
+  if Char.code chr != 0 then begin
+    Buffer.add_char buf chr;
+    _read_zt_str mm (idx+1) buf
+  end
+
+
+let read_zt_string mm idx =
+  let buf = Buffer.create 20 in
+  _read_zt_str mm idx buf;
+  Bytes.to_string (Buffer.to_bytes buf)
