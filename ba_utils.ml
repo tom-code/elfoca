@@ -8,9 +8,28 @@ type stream_reader = {
 };;
 
 
+let get_byte mm ptr =
+  Bigarray.Genarray.get mm [|ptr|]
+
+
+let rec _dump_hex mm idx len =
+  Printf.printf "%02x " (int_of_char (get_byte mm (idx)));
+  if len == 1 then
+    ()
+  else
+    _dump_hex mm (idx+1) (len-1)
+
+
 let st_get_byte sr =
   sr.ptr <- sr.ptr + 1;
   int_of_char (Bigarray.Genarray.get sr.mm [|sr.ptr-1|])
+
+
+
+
+let st_skip sr num =
+  _dump_hex sr.mm sr.ptr num; Printf.printf "skipped %d\n" num;
+  sr.ptr <- sr.ptr + num
 
 let rec _st_get_uleb sr acc bit =
   let b = st_get_byte sr in
@@ -23,8 +42,6 @@ let rec _st_get_uleb sr acc bit =
 let st_get_uleb sr =
   _st_get_uleb sr 0 0
 
-let get_byte mm ptr =
-  Bigarray.Genarray.get mm [|ptr|]
 
 let rec dec_int mm ptr togo bits acu = 
   if togo == 0 then acu

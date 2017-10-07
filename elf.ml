@@ -9,6 +9,7 @@ type section = {
   name_offset  : int;
   stype        : int;
   entsize      : int;
+  size         : int;
   mutable name : string;
 }
 
@@ -27,6 +28,7 @@ let rec _read_sections mm ptr element_size num_of_elements idx lst =
       link        = get_uint32 mm (ptr + 0x28);
       offset      = get_uint64 mm (ptr + 0x18);
       entsize     = get_uint64 mm (ptr + 0x38);
+      size        = get_uint64 mm (ptr + 0x20);
       name        = "?";
   } in
 
@@ -52,18 +54,18 @@ let decode_section_names mm sections =
 
 let dump_sections sections =
   List.iter (fun x ->
-    Printf.printf "idx = %02d name=%-16s link=%2d offset=%8d entsize=%d\n" x.idx x.name x.link x.offset x.entsize
+    Printf.printf "idx = %02d name=%-16s link=%2d offset=%8d entsize=%d size=%d\n" x.idx x.name x.link x.offset x.entsize x.size
   ) sections
 
 
 let read_info mm = 
-  let sh_off       =  (get_uint64 mm 0x28) in
-  let sh_ent_size  =  (get_uint16 mm 0x3a) in
-  let sh_ent_num   =  (get_uint16 mm 0x3c) in
+  let sh_off       =  get_uint64 mm 0x28 in
+  let sh_ent_size  =  get_uint16 mm 0x3a in
+  let sh_ent_num   =  get_uint16 mm 0x3c in
 
   let info = {
-    cls      = (int_of_char(get_byte mm 4));
-    endian   = (int_of_char(get_byte mm 5));
+    cls      = int_of_char(get_byte mm 4);
+    endian   = int_of_char(get_byte mm 5);
     sections = List.rev (read_sections_ mm sh_off sh_ent_size sh_ent_num);
   } in
   decode_section_names mm info.sections;
