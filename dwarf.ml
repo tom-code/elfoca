@@ -48,11 +48,11 @@ let form_names = [
 
 
 let form_get_name id =
-  List.fold_left  (fun acc (_id, _name, _en) -> if _id = id then _name else acc ) "?" form_names
+  List.fold_left  (fun acc (_id, _name, _) -> if _id = id then _name else acc ) "?" form_names
 
-let rec read_attrs str acc = 
-  let name = Ba_utils.st_get_uleb str in
-  let form = Ba_utils.st_get_uleb str in
+let rec read_attrs stream acc =
+  let name = Ba_utils.st_get_uleb stream in
+  let form = Ba_utils.st_get_uleb stream in
 
   let attr = {
     name  = name;
@@ -60,36 +60,36 @@ let rec read_attrs str acc =
   } in
 
   if (attr.name != 0) || (attr.form != 0) then
-    read_attrs str (attr::acc)
+    read_attrs stream (attr::acc)
   else
     acc
 
 
-let rec _read_abbrev str idx acc = 
-  let code = Ba_utils.st_get_uleb str in
-  let tag  = Ba_utils.st_get_uleb str in
+let rec _read_abbrev stream idx acc =
+  let code = Ba_utils.st_get_uleb stream in
+  let tag  = Ba_utils.st_get_uleb stream in
 
   if code != 0 then begin
-    let child = Ba_utils.st_get_uleb str in
+    let child = Ba_utils.st_get_uleb stream in
 
     let abbrev = {
       idx   = idx;
       tag   = tag;
       child = child;
-      attrs = List.rev (read_attrs str []);
+      attrs = List.rev (read_attrs stream []);
     } in
 
-    _read_abbrev str (idx+1) (abbrev::acc)
+    _read_abbrev stream (idx+1) (abbrev::acc)
   end else
     acc
 
   
 let read_abbrev mm idx = 
-  let sread = {
+  let stream = {
     mm = mm;
     ptr = idx;
   } in
-  List.rev (_read_abbrev sread 1 [])
+  List.rev (_read_abbrev stream 1 [])
 
 
 let rec dump_abbrev_attribs lst = 

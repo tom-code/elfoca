@@ -21,6 +21,6 @@ let() =
   Printf.printf "---\n";
 
 
-  Dwarf.dump_info mm (Elf.section_find_offset_by_name elf_info.Elf.sections ".debug_info") dwarf_abbrev;
+  (*Dwarf.dump_info mm (Elf.section_find_offset_by_name elf_info.Elf.sections ".debug_info") dwarf_abbrev;*)
   Unix.close fd
 

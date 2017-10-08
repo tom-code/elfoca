@@ -20,7 +20,6 @@ type info = {
 }
 
 let rec _read_sections mm ptr element_size num_of_elements idx lst =
-
   let section = {
       idx         = idx;
       name_offset = get_uint32 mm (ptr + 0x00);
@@ -31,21 +30,18 @@ let rec _read_sections mm ptr element_size num_of_elements idx lst =
       size        = get_uint64 mm (ptr + 0x20);
       name        = "?";
   } in
-
   let new_lst = section::lst in
-
   match num_of_elements with
     | 1 -> new_lst
     | _ -> _read_sections mm (ptr+element_size) element_size (num_of_elements-1) (idx+1) new_lst
 
 let read_sections_ mm ptr es num = _read_sections mm ptr es num 0 []
 
+let section_find sections comparator =
+  List.fold_left (fun acc x -> if (comparator x) then x.offset else acc) 0 sections
 
-let section_find_offset_by_id sections id =
-  List.fold_left (fun acc x -> if x.idx == id then x.offset else acc) 0 sections
-
-let section_find_offset_by_name sections name =
-  List.fold_left (fun acc x -> if x.name = name then x.offset else acc) 0 sections
+let section_find_offset_by_id   sections id   = section_find sections (fun x-> x.idx = id)
+let section_find_offset_by_name sections name = section_find sections (fun x-> x.name = name)
 
 let decode_section_names mm sections =
   let index_of_names_section  = get_uint16 mm 0x3e in
